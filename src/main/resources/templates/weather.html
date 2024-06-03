@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Weather Report</title>
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	
+	<style>
+		canvas {
+				    display: block;
+				    margin: 0 auto;
+				    max-width: 100%;
+				    height: auto;
+				}
+	        body {
+	            font-family: Arial, sans-serif;
+	            background-color: #f0f0f0;
+	            padding: 20px;
+	            margin: 0;
+	        }
+
+	        h1 {
+	            text-align: center;
+	            margin-bottom: 20px;
+	            color: #333;
+	        }
+
+	        form {
+	            text-align: center;
+	            margin-bottom: 20px;
+	        }
+
+	        input[type="text"] {
+	            padding: 10px;
+	            font-size: 16px;
+	            border-radius: 5px;
+	            border: 1px solid #ccc;
+	        }
+
+	        button[type="submit"] {
+	            padding: 10px 20px;
+	            font-size: 16px;
+	            background-color: #4CAF50;
+	            color: white;
+	            border: none;
+	            border-radius: 5px;
+	            cursor: pointer;
+	        }
+
+	        table {
+	            margin: 20px auto;
+	            border-collapse: collapse;
+	            width: 80%;
+	            max-width: 600px;
+	            background-color: #fff;
+	            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	        }
+
+	        th,
+	        td {
+	            padding: 12px 15px;
+	            text-align: left;
+	            border-bottom: 1px solid #ddd;
+	        }
+
+	        th {
+	            background-color: #f2f2f2;
+	        }
+
+	        .chart-container {
+	            margin: 20px auto;
+	            text-align: center;
+	        }
+
+	        .download-btn {
+	            display: block;
+	            text-align: center;
+	            margin-top: 20px;
+	            text-decoration: none;
+	            padding: 10px 20px;
+	            background-color: #007bff;
+	            color: #fff;
+	            border-radius: 5px;
+	        }
+
+	        .download-btn:hover {
+	            background-color: #0056b3;
+	        }
+	    </style>
+</head>
+
+<body>
+	<h1>Weather Report</h1>
+	<form action="/weather" method="get">
+		<input type="text" name="city" placeholder="Enter city name" required>
+		<button type="submit">Get Weather</button>
+	</form>
+
+	<!--
+	<div th:if="${cityName != null}">
+	<h2 th:text="'Weather in ' + ${cityName}"></h2>
+	</div>
+	<div th:if="${temparature != null}">
+	<p th:text="'Temperature: ' + ${temparature} + '°C'"></p>
+	</div>
+	
+	<div th:if="${humidity != null}">
+		<p th:text="'Humidity: ' + ${humidity} "></p>
+		</div>
+		
+		-->
+
+	<div th:if="${weather != null}">
+		<h2>Weather in <span th:text="${weather.cityName}"></span></h2>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>City</th>
+					<th>Temperature (°C)</th>
+					<th>Humidity (%)</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td th:text="${weather.cityName}"></td>
+					<td th:text="${weather.main.temperature}"></td>
+					<td th:text="${weather.main.humidity}"></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h2>Temperature Pie Chart</h2>
+		<canvas id="pieChart" width="250" height="250"></canvas>
+
+		<h2>Humidity Bar Graph</h2>
+		<canvas id="barGraph" width="250" height="250"></canvas>
+
+		<a th:href="@{/downloadWeather(city=${weather.cityName})}" class="download-btn">Download Data</a>
+		
+		
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+			const weather = {
+				temperature: "[[${weather.main.temperature}]]",
+				humidity: " [[${weather.main.humidity}]]"
+			};
+
+			// Pie Chart for Temperature
+			new Chart(document.getElementById('pieChart'), {
+				type: 'pie',
+				data: {
+					labels: ['Temperature'],
+					datasets: [{
+						data: [weather.temperature],
+						backgroundColor: ['#FF6384']
+					}]
+				}
+			});
+
+			// Bar Graph for Humidity
+			new Chart(document.getElementById('barGraph'), {
+				type: 'bar',
+				data: {
+					labels: ['Humidity'],
+					datasets: [{
+						data: [weather.humidity],
+						backgroundColor: ['#36A2EB']
+					}]
+				}
+			});
+			/*]]>*/
+		</script>
+	</div>
+</body>
+
+</html>
